@@ -1,0 +1,14 @@
+---
+name: CGI-Application-Plugin-Redirect
+version: 0.1
+author:
+  - Cees Hek <ceeshek@gmail.com>
+abstract: Easy external redirects in CGI::Application
+license: perl
+requires:
+  CGI::Application: 0
+provides:
+  CGI::Application::Plugin::Redirect:
+    file: lib/CGI/Application/Plugin/Redirect.pm
+    version: 0.1
+generated_by: Module::Build version 0.2611
