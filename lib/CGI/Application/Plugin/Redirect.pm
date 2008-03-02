@@ -3,7 +3,7 @@ package CGI::Application::Plugin::Redirect;
 use strict;
 use vars qw($VERSION @EXPORT);
 
-$VERSION = 0.10;
+$VERSION = '1.00';
 
 require Exporter;
 
@@ -16,6 +16,7 @@ sub import { goto &Exporter::import }
 sub redirect {
     my $self     = shift;
     my $location = shift;
+    my $status   = shift;
 
     # The eval may fail, but we don't care
     eval {
@@ -23,7 +24,11 @@ sub redirect {
         $self->prerun_mode('dummy_redirect');
     };
 
-    $self->header_add( -location => $location );
+    if ($status) {
+        $self->header_add( -location => $location, -status => $status );
+    } else {
+        $self->header_add( -location => $location );
+    }
     $self->header_type('redirect');
     return;
 }
@@ -53,7 +58,7 @@ CGI::Application::Plugin::Redirect - Easy external redirects in CGI::Application
  sub byebye {
      my $self = shift;
 
-     return $self->redirect('http://www.example.com/');
+     return $self->redirect('http://www.example.com/', '301 Moved Permanently');
  }
 
 
@@ -72,7 +77,7 @@ sufficient to use the C<forward> method in L<CGI::Application::Plugin::Forward> 
 =head1 METHODS
 
 
-=head2 redirect
+=head2 redirect($url, $status)
 
 Interupt the current request, and redirect to an external URL.  If
 you happen to be inside a prerun method when you call this, the
@@ -80,7 +85,14 @@ current runmode will automatically be short circuited so that it
 will not execute.  As soon as all prerun method have finished,
 the redirect will happen without the runmode being executed.
 
+The $status paramater is optional as the CGI module will default to something
+suitable.
+
   return $self->redirect('http://www.example.com/');
+
+  - or -
+
+  return $self->redirect('http://www.example.com/', '301 Moved Permanently');
  
 
 =head1 SEE ALSO
